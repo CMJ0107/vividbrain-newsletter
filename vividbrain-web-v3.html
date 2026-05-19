@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VividBrain — 처방 의사를 위한 DTx 인사이트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  /* 시원한 블루 팔레트 */
+  --blue-900: #0D2A3D;
+  --blue-800: #103650;
+  --blue-700: #1A5070;
+  --blue-600: #1E6A8F;
+  --blue-500: #2485B2;
+  --blue-400: #3BA0CC;
+  --blue-300: #6DBDE0;
+  --blue-200: #A8D9EF;
+  --blue-100: #D6EEF8;
+  --blue-50:  #EDF6FB;
+  /* 중립 */
+  --gray-900: #0F1D24;
+  --gray-700: #2C4250;
+  --gray-500: #5A7A8A;
+  --gray-300: #A8BEC8;
+  --gray-100: #E8F0F3;
+  --gray-50:  #F3F7F9;
+  --white:    #FFFFFF;
+  /* 카테고리 */
+  --rw:  #1A6B55;   /* 그린 계열 - 현장/데이터 */
+  --rw-l:#E6F5F1;
+  --ac:  #5140A0;   /* 퍼플 - 학술 */
+  --ac-l:#EEEAFA;
+  /* 타이포 */
+  --font-sans: 'Noto Sans KR', -apple-system, sans-serif;
+  --font-serif: 'Noto Serif KR', Georgia, serif;
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-sans);
+  background:#D6E6EE;
+  color:var(--gray-900);
+  -webkit-font-smoothing:antialiased;
+  font-size:15px;
+  line-height:1.7;
+}
+
+/* ══════════════════════════
+   SHELL
+══════════════════════════ */
+.shell{max-width:720px;margin:0 auto;background:var(--white);box-shadow:0 2px 40px rgba(13,42,61,0.12);}
+
+/* ══════════════════════════
+   TOP BAR
+══════════════════════════ */
+.topbar{
+  background:var(--blue-800);
+  height:50px;
+  padding:0 36px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.tb-left{display:flex;align-items:center;gap:14px;}
+.tb-logo img{height:20px;width:auto;display:block;filter:brightness(0) invert(1);}
+.tb-sep{width:1px;height:16px;background:rgba(255,255,255,0.18);}
+.tb-tag{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.5px;font-weight:300;}
+.tb-vol{font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.3px;}
+
+/* ══════════════════════════
+   CATEGORY BUTTONS
+══════════════════════════ */
+.cat-nav{
+  display:flex;
+  background:var(--blue-700);
+  gap:1px;
+}
+/* 각 버튼을 진짜 버튼처럼 */
+.cn-btn{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  padding:12px 8px 10px;
+  cursor:pointer;
+  background:var(--blue-700);
+  border:none;
+  border-bottom:3px solid transparent;
+  transition:background 0.18s, border-color 0.18s;
+  position:relative;
+  /* 버튼처럼 보이게 */
+  -webkit-user-select:none;user-select:none;
+}
+.cn-btn:hover{background:var(--blue-600);}
+.cn-btn.active{
+  background:var(--blue-500);
+  border-bottom-color:var(--blue-200);
+}
+.cn-btn:active{transform:translateY(1px);}
+/* 클릭 힌트 배지 */
+.cn-hint{
+  position:absolute;
+  top:6px;right:8px;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:0.3px;
+  color:rgba(255,255,255,0.28);
+  background:rgba(255,255,255,0.08);
+  padding:1px 6px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,0.1);
+  pointer-events:none;
+  transition:opacity 0.2s;
+}
+.cn-btn:hover .cn-hint,.cn-btn.active .cn-hint{opacity:0;}
+.cn-icon{font-size:18px;color:rgba(255,255,255,0.45);transition:color 0.18s;line-height:1;}
+.cn-btn:hover .cn-icon,.cn-btn.active .cn-icon{color:rgba(255,255,255,0.95);}
+.cn-label{
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.45);
+  transition:color 0.18s;
+}
+.cn-btn:hover .cn-label,.cn-btn.active .cn-label{color:#fff;}
+.cn-desc{
+  font-size:10px;
+  color:rgba(255,255,255,0.28);
+  letter-spacing:0.2px;
+  font-weight:300;
+  transition:color 0.18s;
+}
+.cn-btn:hover .cn-desc,.cn-btn.active .cn-desc{color:rgba(255,255,255,0.55);}
+
+/* ══════════════════════════
+   CAT VIEWS
+══════════════════════════ */
+.cat-view{display:none;}
+.cat-view.active{display:block;}
+
+/* ══════════════════════════
+   HERO
+══════════════════════════ */
+.hero{
+  padding:52px 48px 44px;
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+}
+.hero-vb{ background:linear-gradient(135deg, var(--blue-700) 0%, var(--blue-500) 100%); }
+.hero-rw{ background:linear-gradient(135deg, #0F4035 0%, var(--rw) 100%); cursor:default; }
+.hero-ac{ background:linear-gradient(135deg, #2E1E6A 0%, var(--ac) 100%); cursor:default; }
+
+/* 배경 원형 장식 */
+.hero-circle{
+  position:absolute;
+  right:-60px;top:-60px;
+  width:280px;height:280px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.07);
+  pointer-events:none;
+}
+.hero-circle2{
+  position:absolute;
+  right:-30px;top:-30px;
+  width:200px;height:200px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.05);
+  pointer-events:none;
+}
+
+.hero-eyebrow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.4);
+  margin-bottom:20px;
+}
+.hero-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.3);flex-shrink:0;}
+
+.hero-q{
+  font-family:var(--font-serif);
+  font-size:30px;
+  font-weight:600;
+  color:#fff;
+  line-height:1.5;
+  letter-spacing:-0.3px;
+  margin-bottom:6px;
+}
+.hero-q em{
+  font-style:italic;
+  color:var(--blue-200);
+  display:block;
+  font-weight:400;
+  font-size:26px;
+}
+.hero-vb .hero-q em{color:#A8D9EF;}
+.hero-rw .hero-q em{color:#8FDBC9;}
+.hero-ac .hero-q em{color:#C0B4F0;}
+
+.hero-desc{
+  font-size:15px;
+  font-weight:300;
+  color:rgba(255,255,255,0.68);
+  line-height:1.85;
+  margin-bottom:32px;
+  max-width:440px;
+  letter-spacing:0.1px;
+}
+
+/* 진짜 버튼처럼 */
+.hero-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(255,255,255,0.92);
+  color:var(--blue-800);
+  font-size:13px;
+  font-weight:700;
+  padding:11px 22px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  letter-spacing:0.3px;
+  transition:all 0.18s;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+.hero-btn:hover{background:#fff;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,0.2);}
+.hero-btn:active{transform:translateY(0);}
+.hero-btn i{font-size:15px;transition:transform 0.18s;}
+.hero-btn:hover i{transform:translateX(3px);}
+
+/* ══════════════════════════
+   INNER NAV
+══════════════════════════ */
+.inner-nav{
+  display:flex;
+  background:var(--white);
+  border-bottom:1px solid var(--gray-100);
+}
+.in-btn{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:13px 6px;
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--gray-500);
+  cursor:pointer;
+  border:none;
+  background:none;
+  border-bottom:2px solid transparent;
+  transition:all 0.15s;
+  letter-spacing:0.1px;
+}
+.in-btn i{font-size:15px;}
+.in-btn:hover{color:var(--blue-600);background:var(--blue-50);}
+.in-btn.active{color:var(--blue-600);border-bottom-color:var(--blue-500);font-weight:700;background:var(--blue-50);}
+
+/* ══════════════════════════
+   PANEL AREA
+══════════════════════════ */
+.panels{background:var(--gray-50);}
+.panel{display:none;padding:28px 32px 40px;}
+.panel.active{display:block;}
+.pl{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--gray-300);
+  margin-bottom:18px;
+}
+
+/* ══════════════════════════
+   CARD NEWS
+══════════════════════════ */
+.cn-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px;}
+.cn-card{background:var(--white);border:1px solid var(--gray-100);border-radius:8px;overflow:hidden;}
+.cn-top{height:72px;display:flex;align-items:center;justify-content:center;}
+.cn-tl{background:var(--blue-50);}
+.cn-tr{background:var(--rw-l);}
+.cn-ta{background:var(--ac-l);}
+.cn-body{padding:13px 15px 15px;}
+.cn-num{
+  font-family:var(--font-serif);
+  font-size:28px;
+  font-weight:700;
+  line-height:1.1;
+  margin-bottom:4px;
+}
+.cn-blue .cn-num{color:var(--blue-600);}
+.cn-green .cn-num{color:var(--rw);}
+.cn-purple .cn-num{color:var(--ac);}
+.cn-lbl{font-size:12.5px;color:var(--gray-700);line-height:1.5;font-weight:500;}
+.cn-sub{font-size:11px;color:var(--gray-300);margin-top:2px;}
+
+/* ══════════════════════════
+   SUMMARY
+══════════════════════════ */
+.sum-card{background:var(--white);border:1px solid var(--gray-100);border-radius:8px;padding:20px 22px;}
+.sum-item{display:flex;gap:14px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--gray-100);}
+.sum-item:last-child{border-bottom:none;padding-bottom:0;}
+.sum-n{
+  width:22px;height:22px;
+  border-radius:50%;
+  background:var(--blue-500);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:2px;
+}
+.sum-txt{font-size:14.5px;color:var(--gray-700);line-height:1.8;}
+.sum-txt strong{color:var(--blue-700);font-weight:700;}
+
+/* ══════════════════════════
+   RW ITEMS
+══════════════════════════ */
+.rw-list{display:flex;flex-direction:column;gap:10px;}
+.rw-card{background:var(--white);border:1px solid var(--gray-100);border-radius:8px;padding:20px 22px;}
+.rw-badge{
+  display:inline-block;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  background:var(--rw-l);color:var(--rw);
+  padding:3px 9px;border-radius:4px;margin-bottom:9px;
+}
+.rw-row{display:flex;gap:16px;align-items:flex-start;}
+.rw-main{flex:1;}
+.rw-title{font-family:var(--font-serif);font-size:15.5px;font-weight:600;color:var(--gray-900);margin-bottom:6px;line-height:1.5;}
+.rw-body{font-size:14px;color:var(--gray-500);line-height:1.8;}
+.rw-stat{text-align:right;flex-shrink:0;}
+.rw-big{font-family:var(--font-serif);font-size:32px;font-weight:700;color:var(--rw);line-height:1;}
+.rw-sub{font-size:11px;color:var(--gray-300);margin-top:2px;}
+
+/* ══════════════════════════
+   ACADEMIC
+══════════════════════════ */
+.ac-paper{background:var(--white);border:1px solid var(--gray-100);border-radius:8px;overflow:hidden;}
+.ac-head{background:var(--ac);padding:20px 24px;}
+.ac-journal{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:7px;}
+.ac-ttl{font-family:var(--font-serif);font-size:16px;font-weight:600;color:#fff;line-height:1.55;}
+.ac-tags{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap;}
+.ac-tag{font-size:10.5px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.75);padding:3px 9px;border-radius:4px;}
+.ac-body{padding:20px 24px;}
+.ac-find{display:flex;gap:14px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--gray-100);}
+.ac-find:last-of-type{border-bottom:none;padding-bottom:0;}
+.ac-idx{
+  font-family:var(--font-serif);
+  font-size:26px;font-weight:700;
+  color:#D8CEEE;line-height:1;flex-shrink:0;min-width:24px;
+}
+.ac-ftxt{font-size:14.5px;color:var(--gray-700);line-height:1.8;}
+.ac-ftxt strong{color:var(--ac);font-weight:700;}
+.ac-insight{
+  margin-top:14px;
+  background:var(--ac-l);
+  border-left:3px solid var(--ac);
+  padding:13px 16px;
+  border-radius:0 6px 6px 0;
+}
+.ac-ilbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ac);margin-bottom:5px;}
+.ac-itxt{font-size:14.5px;color:#2E1E4E;line-height:1.8;}
+.ac-itxt strong{font-weight:700;}
+
+/* ══════════════════════════
+   ARCHIVE
+══════════════════════════ */
+.arch-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.arch-title{font-family:var(--font-serif);font-size:17px;font-weight:600;color:var(--gray-900);}
+.arch-cnt{font-size:11px;font-weight:700;background:var(--blue-100);color:var(--blue-700);padding:3px 11px;border-radius:4px;}
+.arch-list{display:flex;flex-direction:column;gap:7px;}
+.arch-item{
+  background:var(--white);
+  border:1px solid var(--gray-100);
+  border-radius:8px;
+  padding:15px 18px;
+  cursor:pointer;
+  display:flex;gap:14px;align-items:flex-start;
+  transition:all 0.15s;
+}
+.arch-item:hover{border-color:var(--blue-300);background:var(--blue-50);}
+.arch-item.cur{border-left:3px solid var(--blue-500);padding-left:16px;background:var(--blue-50);}
+.arch-vol{
+  font-family:var(--font-serif);
+  font-size:20px;font-weight:700;
+  color:var(--gray-100);
+  min-width:28px;line-height:1;flex-shrink:0;padding-top:3px;
+}
+.arch-item.cur .arch-vol{color:var(--blue-500);}
+.arch-meta{flex:1;}
+.arch-date{font-size:11px;color:var(--gray-300);margin-bottom:3px;}
+.arch-ttl{font-size:14px;font-weight:700;color:var(--gray-900);line-height:1.45;margin-bottom:6px;}
+.arch-chips{display:flex;gap:4px;flex-wrap:wrap;}
+.chip{font-size:10.5px;padding:2px 8px;border-radius:4px;font-weight:500;}
+.chip-vb{background:var(--blue-100);color:var(--blue-700);}
+.chip-rw{background:var(--rw-l);color:var(--rw);}
+.chip-ac{background:var(--ac-l);color:var(--ac);}
+.arch-new{
+  font-size:10px;font-weight:700;
+  background:var(--blue-500);color:#fff;
+  padding:3px 9px;border-radius:4px;
+  margin-left:auto;flex-shrink:0;letter-spacing:0.5px;
+  align-self:flex-start;
+}
+
+/* ══════════════════════════
+   CAT STATIC HERO (RW / AC)
+══════════════════════════ */
+.cat-arch-wrap{background:var(--gray-50);padding:24px 32px 40px;}
+
+/* ══════════════════════════
+   FOOTER
+══════════════════════════ */
+.footer{background:var(--blue-900);padding:0;}
+
+.footer-main{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.footer-col{padding:36px 36px;}
+.footer-col+.footer-col{border-left:1px solid rgba(255,255,255,0.07);}
+
+.ft-logo{margin-bottom:14px;}
+.ft-logo img{height:18px;width:auto;filter:brightness(0) invert(1);opacity:0.85;}
+.ft-about{font-size:13px;color:rgba(255,255,255,0.38);line-height:1.8;font-weight:300;}
+
+.ft-heading{
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(255,255,255,0.25);margin-bottom:16px;
+}
+.ft-links{display:flex;flex-direction:column;gap:10px;}
+.ft-link{
+  display:flex;align-items:center;gap:9px;
+  font-size:13.5px;color:rgba(255,255,255,0.6);
+  text-decoration:none;
+  transition:color 0.15s;
+}
+.ft-link:hover{color:#fff;}
+.ft-link i{font-size:16px;color:rgba(255,255,255,0.3);flex-shrink:0;}
+.ft-link:hover i{color:var(--blue-300);}
+
+.footer-contact{
+  padding:24px 36px;
+  display:flex;flex-direction:column;gap:8px;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.ft-contact-row{
+  display:flex;align-items:center;gap:10px;
+  font-size:13px;color:rgba(255,255,255,0.45);
+}
+.ft-contact-row i{font-size:15px;color:rgba(255,255,255,0.25);flex-shrink:0;}
+
+.footer-bottom{
+  padding:18px 36px;
+  display:flex;justify-content:space-between;align-items:center;
+  gap:16px;
+}
+.ft-copy{font-size:11.5px;color:rgba(255,255,255,0.2);letter-spacing:0.2px;}
+.ft-legal{font-size:11.5px;color:rgba(255,255,255,0.2);}
+.ft-legal a{color:rgba(255,255,255,0.22);text-decoration:none;}
+.ft-legal a:hover{color:rgba(255,255,255,0.45);}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ── TOP BAR ── -->
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-logo">
+      <img src="data:image/png;base64,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" alt="VividBrain">
+    </div>
+    <div class="tb-sep"></div>
+    <span class="tb-tag">처방 의사를 위한 DTx 인사이트</span>
+  </div>
+  <div class="tb-vol">Vol.02 · 2025.01.15</div>
+</div>
+
+<!-- ── CATEGORY NAV ── -->
+<div class="cat-nav">
+  <button class="cn-btn active" id="cnb-vb" onclick="switchCat('vb')">
+    <span class="cn-hint">탭 선택</span>
+    <i class="ti ti-sparkles cn-icon" aria-hidden="true"></i>
+    <span class="cn-label">VividBrain</span>
+    <span class="cn-desc">제품 소식 & 소개</span>
+  </button>
+  <button class="cn-btn" id="cnb-rw" onclick="switchCat('rw')">
+    <span class="cn-hint">탭 선택</span>
+    <i class="ti ti-chart-bar cn-icon" aria-hidden="true"></i>
+    <span class="cn-label">Real World</span>
+    <span class="cn-desc">처방 현황 & 반응</span>
+  </button>
+  <button class="cn-btn" id="cnb-ac" onclick="switchCat('ac')">
+    <span class="cn-hint">탭 선택</span>
+    <i class="ti ti-microscope cn-icon" aria-hidden="true"></i>
+    <span class="cn-label">Academic</span>
+    <span class="cn-desc">임상 근거 & 논문</span>
+  </button>
+</div>
+
+<!-- ════ VIVIDBRAIN ════ -->
+<div class="cat-view active" id="cv-vb">
+  <div class="hero hero-vb" onclick="switchInner('vb','brief')">
+    <div class="hero-circle"></div>
+    <div class="hero-circle2"></div>
+    <div class="hero-eyebrow">
+      <span class="hero-dot"></span>
+      최신호 &nbsp;·&nbsp; Vol.02 &nbsp;·&nbsp; 2025.01.15
+    </div>
+    <div class="hero-q">
+      "만성기 환자에게 처방해도 괜찮을까요?"
+      <em>— 이미 늦었다는 건 착각입니다.</em>
+    </div>
+    <div class="hero-desc">발병 후 2년이 지난 환자에서도 신경 가소성은 살아있습니다. 최신 RCT 데이터와 국내 처방 현황으로 확인해보세요.</div>
+    <button class="hero-btn">
+      이번 호 읽기
+      <i class="ti ti-arrow-right" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div class="inner-nav">
+    <button class="in-btn active" id="ib-vb-brief" onclick="switchInner('vb','brief')">
+      <i class="ti ti-cards" aria-hidden="true"></i>브리프
+    </button>
+    <button class="in-btn" id="ib-vb-rw" onclick="switchInner('vb','rw')">
+      <i class="ti ti-chart-bar" aria-hidden="true"></i>현장 소식
+    </button>
+    <button class="in-btn" id="ib-vb-ac" onclick="switchInner('vb','ac')">
+      <i class="ti ti-book" aria-hidden="true"></i>학술 근거
+    </button>
+    <button class="in-btn" id="ib-vb-arch" onclick="switchInner('vb','arch')">
+      <i class="ti ti-archive" aria-hidden="true"></i>아카이브
+    </button>
+  </div>
+
+  <div class="panels">
+    <!-- BRIEF -->
+    <div class="panel active" id="p-vb-brief">
+      <div class="pl">핵심 요약 · 카드뉴스</div>
+      <div class="cn-grid">
+        <div class="cn-card cn-blue">
+          <div class="cn-top cn-tl"><i class="ti ti-brain" style="font-size:28px;color:var(--blue-400);" aria-hidden="true"></i></div>
+          <div class="cn-body">
+            <div class="cn-num">2년+</div>
+            <div class="cn-lbl">만성기에도<br>신경 가소성 유지</div>
+            <div class="cn-sub">fMRI 연구 확인</div>
+          </div>
+        </div>
+        <div class="cn-card cn-green">
+          <div class="cn-top cn-tr"><i class="ti ti-chart-line" style="font-size:28px;color:var(--rw);" aria-hidden="true"></i></div>
+          <div class="cn-body">
+            <div class="cn-num">68%</div>
+            <div class="cn-lbl">만성기 환자<br>12주 완료율</div>
+            <div class="cn-sub">급성기 78% 대비</div>
+          </div>
+        </div>
+        <div class="cn-card cn-purple">
+          <div class="cn-top cn-ta"><i class="ti ti-trending-up" style="font-size:28px;color:var(--ac);" aria-hidden="true"></i></div>
+          <div class="cn-body">
+            <div class="cn-num">+34%</div>
+            <div class="cn-lbl">전월 대비<br>처방 증가율</div>
+            <div class="cn-sub">국내 집계 기준</div>
+          </div>
+        </div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-item">
+          <div class="sum-n">1</div>
+          <div class="sum-txt">만성기라는 이유만으로 처방을 미루지 않아도 됩니다. <strong>신경 가소성은 소실되지 않습니다.</strong></div>
+        </div>
+        <div class="sum-item">
+          <div class="sum-n">2</div>
+          <div class="sum-txt">효과 속도는 급성기보다 느리지만, <strong>12주 이상 지속 시 임상적으로 유의미한 개선</strong>이 나타납니다.</div>
+        </div>
+        <div class="sum-item">
+          <div class="sum-n">3</div>
+          <div class="sum-txt">국내 처방 데이터에서도 <strong>만성기 환자 처방이 전월 대비 34% 증가</strong> 추세입니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RW -->
+    <div class="panel" id="p-vb-rw">
+      <div class="pl">Real World · 현장 소식</div>
+      <div class="rw-list">
+        <div class="rw-card">
+          <span class="rw-badge">처방 현황</span>
+          <div class="rw-row">
+            <div class="rw-main">
+              <div class="rw-title">2025년 1월 누적 처방 현황</div>
+              <div class="rw-body">만성기 환자 처방이 신경과·재활의학과 중심으로 빠르게 증가. 전월 대비 34% 증가, 누적 처방 의사 수 역대 최고치 기록.</div>
+            </div>
+            <div class="rw-stat"><div class="rw-big">+34%</div><div class="rw-sub">전월 대비</div></div>
+          </div>
+        </div>
+        <div class="rw-card">
+          <span class="rw-badge">처방 의사 인터뷰</span>
+          <div class="rw-title">"처음엔 반신반의했는데, 환자가 먼저 차이를 말해줬어요"</div>
+          <div class="rw-body">신경과 전문의 김○○ 선생님의 6개월 처방 경험. 처음 도입 시 걱정했던 것과 실제로 달라진 점을 솔직하게 들어봤습니다.</div>
+        </div>
+        <div class="rw-card">
+          <span class="rw-badge">환자 순응도</span>
+          <div class="rw-row">
+            <div class="rw-main">
+              <div class="rw-title">고령 환자의 앱 사용 패턴 분석</div>
+              <div class="rw-body">65세 이상 사용자 데이터 분석. 아침 7–9시 사용이 62%로 기존 루틴에 자연스럽게 편입되는 패턴 확인.</div>
+            </div>
+            <div class="rw-stat"><div class="rw-big">62%</div><div class="rw-sub">오전 루틴</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACADEMIC -->
+    <div class="panel" id="p-vb-ac">
+      <div class="pl">Academic · 학술 근거</div>
+      <div class="ac-paper">
+        <div class="ac-head">
+          <div class="ac-journal">Neurology · 2024 · 무작위대조시험</div>
+          <div class="ac-ttl">만성기 뇌졸중 환자에서 DTx 기반 시지각 훈련의 효과: 6개월 추적 무작위대조시험</div>
+          <div class="ac-tags">
+            <span class="ac-tag">RCT</span><span class="ac-tag">n=186</span><span class="ac-tag">6개월 추적</span><span class="ac-tag">만성기</span>
+          </div>
+        </div>
+        <div class="ac-body">
+          <div class="ac-find"><div class="ac-idx">1</div><div class="ac-ftxt">발병 후 6개월+ 경과 환자에서 <strong>6dB 이상 시야 개선 달성률 41%</strong> — 위약군 12% 대비 유의미 (p&lt;0.001)</div></div>
+          <div class="ac-find"><div class="ac-idx">2</div><div class="ac-ftxt">훈련 지속 시간과 개선 폭 간 <strong>양의 선형 상관관계</strong> 확인 (r=0.68, p&lt;0.001)</div></div>
+          <div class="ac-find"><div class="ac-idx">3</div><div class="ac-ftxt"><strong>6개월 추적에서 효과 유지</strong> — 훈련 종료 후에도 개선 지속</div></div>
+          <div class="ac-insight">
+            <div class="ac-ilbl">처방에의 시사점</div>
+            <div class="ac-itxt">"지금 시작해도 늦지 않았다"고 말씀드릴 수 있는 근거입니다. <strong>지속 시간이 핵심 변수</strong>입니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARCHIVE -->
+    <div class="panel" id="p-vb-arch">
+      <div class="arch-head">
+        <div class="arch-title">전체 아카이브</div>
+        <div class="arch-cnt">총 4호 발행</div>
+      </div>
+      <div class="arch-list">
+        <div class="arch-item cur" onclick="switchInner('vb','brief')">
+          <div class="arch-vol">02</div>
+          <div class="arch-meta">
+            <div class="arch-date">2025.01.15</div>
+            <div class="arch-ttl">"만성기 환자에게 처방해도 괜찮을까요?"</div>
+            <div class="arch-chips"><span class="chip chip-vb">VividBrain</span><span class="chip chip-rw">Real World</span><span class="chip chip-ac">Academic</span></div>
+          </div>
+          <div class="arch-new">NEW</div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-vol" style="color:var(--gray-100);">01</div>
+          <div class="arch-meta">
+            <div class="arch-date">2025.01.01</div>
+            <div class="arch-ttl">"이 환자, 실제로 좋아질 수 있을까요?"</div>
+            <div class="arch-chips"><span class="chip chip-vb">VividBrain</span><span class="chip chip-ac">Academic</span></div>
+          </div>
+        </div>
+        <div class="arch-item" style="opacity:0.5;">
+          <div class="arch-vol" style="color:var(--gray-100);">00</div>
+          <div class="arch-meta">
+            <div class="arch-date">2024.12.15</div>
+            <div class="arch-ttl">"왜 눈이 아니라 뇌를 훈련하나요?"</div>
+            <div class="arch-chips"><span class="chip chip-vb">VividBrain</span></div>
+          </div>
+        </div>
+        <div class="arch-item" style="opacity:0.5;">
+          <div class="arch-vol" style="color:var(--gray-100);">–1</div>
+          <div class="arch-meta">
+            <div class="arch-date">2024.12.01</div>
+            <div class="arch-ttl">"고령 환자도 정말 사용할 수 있을까요?"</div>
+            <div class="arch-chips"><span class="chip chip-rw">Real World</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ REAL WORLD ════ -->
+<div class="cat-view" id="cv-rw">
+  <div class="hero hero-rw">
+    <div class="hero-circle"></div>
+    <div class="hero-circle2"></div>
+    <div class="hero-eyebrow"><span class="hero-dot" style="background:rgba(255,255,255,0.3);"></span>Real World · 처방 현장의 살아있는 데이터</div>
+    <div class="hero-q" style="font-size:26px;">
+      처방 건수, 환자 반응,
+      <em>동료 의사들의 이야기</em>
+    </div>
+    <div class="hero-desc">국내 처방 현황, 환자 순응도 데이터, 처방 의사 인터뷰를 이 카테고리에서 모아볼 수 있습니다.</div>
+  </div>
+  <div class="cat-arch-wrap">
+    <div class="pl">Real World 전체 콘텐츠</div>
+    <div class="arch-list">
+      <div class="arch-item cur" onclick="switchCat('vb');switchInner('vb','rw');">
+        <div class="arch-vol" style="color:var(--rw);">02</div>
+        <div class="arch-meta">
+          <div class="arch-date">2025.01.15</div>
+          <div class="arch-ttl">1월 처방 현황 +34% · 만성기 처방 증가 추세 · 의사 인터뷰</div>
+          <div class="arch-chips"><span class="chip chip-rw">처방 현황</span><span class="chip chip-rw">인터뷰</span><span class="chip chip-rw">순응도</span></div>
+        </div>
+        <div class="arch-new" style="background:var(--rw);">NEW</div>
+      </div>
+      <div class="arch-item" style="opacity:0.55;">
+        <div class="arch-vol" style="color:var(--gray-100);">–1</div>
+        <div class="arch-meta">
+          <div class="arch-date">2024.12.01</div>
+          <div class="arch-ttl">고령 환자 앱 사용 패턴 — 65세 이상 6개월 추적 데이터</div>
+          <div class="arch-chips"><span class="chip chip-rw">순응도</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ACADEMIC ════ -->
+<div class="cat-view" id="cv-ac">
+  <div class="hero hero-ac">
+    <div class="hero-circle"></div>
+    <div class="hero-circle2"></div>
+    <div class="hero-eyebrow"><span class="hero-dot" style="background:rgba(255,255,255,0.3);"></span>Academic · 근거 중심 학술 정보</div>
+    <div class="hero-q" style="font-size:26px;">
+      임상 근거로
+      <em>처방을 확신하세요.</em>
+    </div>
+    <div class="hero-desc">RCT, 코호트 연구, 메타분석 — 처방 결정에 직결되는 데이터만 선별해 전달합니다.</div>
+  </div>
+  <div class="cat-arch-wrap">
+    <div class="pl">Academic 전체 콘텐츠</div>
+    <div class="arch-list">
+      <div class="arch-item cur" onclick="switchCat('vb');switchInner('vb','ac');">
+        <div class="arch-vol" style="color:var(--ac);">02</div>
+        <div class="arch-meta">
+          <div class="arch-date">2025.01.15</div>
+          <div class="arch-ttl">만성기 DTx 효과 — 6개월 추적 RCT (Neurology 2024)</div>
+          <div class="arch-chips"><span class="chip chip-ac">RCT</span><span class="chip chip-ac">만성기</span><span class="chip chip-ac">n=186</span></div>
+        </div>
+        <div class="arch-new" style="background:var(--ac);">NEW</div>
+      </div>
+      <div class="arch-item" style="opacity:0.55;">
+        <div class="arch-vol" style="color:var(--gray-100);">01</div>
+        <div class="arch-meta">
+          <div class="arch-date">2025.01.01</div>
+          <div class="arch-ttl">시지각 훈련과 작업기억 개선 — JAMA Neurology 2024</div>
+          <div class="arch-chips"><span class="chip chip-ac">RCT</span><span class="chip chip-ac">인지기능</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ FOOTER ════ -->
+<div class="footer">
+  <div class="footer-main">
+    <!-- 회사 소개 -->
+    <div class="footer-col">
+      <div class="ft-logo">
+        <img src="data:image/png;base64,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" alt="VividBrain">
+      </div>
+      <div class="ft-about">디지털치료기기(DTx)를 통해 환자의 시지각 기능을 회복하는<br>뉴냅스(Newnaps Inc.)의 의사 전용 인사이트 채널입니다.</div>
+    </div>
+    <!-- SNS & 링크 -->
+    <div class="footer-col">
+      <div class="ft-heading">채널 바로가기</div>
+      <div class="ft-links">
+        <a class="ft-link" href="https://www.newnaps.com" target="_blank" rel="noopener">
+          <i class="ti ti-world" aria-hidden="true"></i>
+          newnaps.com &nbsp;— 뉴냅스 홈페이지
+        </a>
+        <a class="ft-link" href="https://www.instagram.com/newnaps_official" target="_blank" rel="noopener">
+          <i class="ti ti-brand-instagram" aria-hidden="true"></i>
+          @newnaps_official &nbsp;— 인스타그램
+        </a>
+        <a class="ft-link" href="https://www.linkedin.com/company/newnaps" target="_blank" rel="noopener">
+          <i class="ti ti-brand-linkedin" aria-hidden="true"></i>
+          Newnaps Inc. &nbsp;— 링크드인
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 연락처 -->
+  <div class="footer-contact">
+    <div class="ft-contact-row">
+      <i class="ti ti-mail" aria-hidden="true"></i>
+      medical@newnaps.com
+    </div>
+    <div class="ft-contact-row">
+      <i class="ti ti-phone" aria-hidden="true"></i>
+      02-000-0000
+    </div>
+    <div class="ft-contact-row">
+      <i class="ti ti-map-pin" aria-hidden="true"></i>
+      서울특별시 강남구 테헤란로 [주소]
+    </div>
+  </div>
+
+  <!-- 하단 법적 고지 -->
+  <div class="footer-bottom">
+    <div class="ft-copy">© 2025 Newnaps Inc. All rights reserved.</div>
+    <div class="ft-legal">
+      <a href="#">개인정보처리방침</a>
+      &nbsp;·&nbsp;
+      <a href="#">수신 거부</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function switchCat(c){
+  ['vb','rw','ac'].forEach(x=>{
+    document.getElementById('cv-'+x).classList.toggle('active',x===c);
+    document.getElementById('cnb-'+x).classList.toggle('active',x===c);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function switchInner(cat,p){
+  ['brief','rw','ac','arch'].forEach(x=>{
+    const b=document.getElementById('ib-'+cat+'-'+x);
+    const pn=document.getElementById('p-'+cat+'-'+x);
+    if(b) b.classList.toggle('active',x===p);
+    if(pn) pn.classList.toggle('active',x===p);
+  });
+}
+</script>
+</body>
+</html>
